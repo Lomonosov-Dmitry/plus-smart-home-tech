@@ -31,6 +31,8 @@ public class KafkaEventProducer {
                 ProducerRecord<String, HubEventAvro> record = new ProducerRecord<>(topic, (HubEventAvro) event);
                 try(Producer<String, HubEventAvro> producer = new KafkaProducer<>(config)) {
                     producer.send(record);
+                    producer.flush();
+                    producer.close();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -40,6 +42,8 @@ public class KafkaEventProducer {
                 ProducerRecord<String, SensorEventAvro> record = new ProducerRecord<>(topic, (SensorEventAvro) event);
                 try (Producer<String, SensorEventAvro> producer = new KafkaProducer<>(config)) {
                     producer.send(record);
+                    producer.flush();
+                    producer.close();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
