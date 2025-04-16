@@ -1,33 +1,36 @@
-package ru.yandex.practicum.service.handler.hub_handlers;
+package ru.yandex.practicum.service.handler.hub_handlers.proto;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.model.hub_events.*;
 import ru.yandex.practicum.service.KafkaEventProducer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ScenarioAddedEventHandler extends BaseHubEventHandler<ScenarioAddedEventAvro> implements HubEventHandler {
-    public ScenarioAddedEventHandler(KafkaEventProducer producer) {
+public class ScenarioAddedEventProtoHandler extends BaseHubEventProtoHandler<ScenarioAddedEventAvro> implements HubEventProtoHandler {
+    public ScenarioAddedEventProtoHandler(KafkaEventProducer producer) {
         super(producer);
     }
 
     @Override
-    protected ScenarioAddedEventAvro mapToAvro(HubEvent event) {
-        ScenarioAddedEvent scEvent = (ScenarioAddedEvent) event;
+    protected ScenarioAddedEventAvro mapToAvro(HubEventProto event) {
+        ScenarioAddedEventProto proto = event.getScenarioAdded();
         List<ScenarioConditionAvro> conditions = new ArrayList<>();
-        for (ScenarioCondition condition : scEvent.getConditions()) {
+        for (ScenarioConditionProto condition : proto.getConditionList()) {
             conditions.add(ScenarioConditionAvro.newBuilder()
                     .setOperation(ConditionOperationAvro.valueOf(condition.getOperation().toString()))
                     .setSensorId(condition.getSensorId())
                     .setType(ConditionTypeAvro.valueOf(condition.getType().toString()))
-                    .setValue(condition.getValue())
+                    .setValue(condition.getValueCase())
                     .build());
         }
         List<DeviceActionAvro> actions = new ArrayList<>();
-        for (DeviceAction action : scEvent.getActions()) {
+        for (DeviceActionProto action : proto.getActionList()) {
             actions.add(DeviceActionAvro.newBuilder()
                     .setType(ActionTypeAvro.valueOf(action.getType().toString()))
                     .setSensorId(action.getSensorId())
@@ -37,12 +40,12 @@ public class ScenarioAddedEventHandler extends BaseHubEventHandler<ScenarioAdded
         return ScenarioAddedEventAvro.newBuilder()
                 .setConditions(conditions)
                 .setActions(actions)
-                .setName(scEvent.getName())
+                .setName(proto.getName())
                 .build();
     }
 
     @Override
-    public HubEventType getMessageType() {
-        return HubEventType.SCENARIO_ADDED;
+    public HubEventProto.PayloadCase getMessageType() {
+        return HubEventProto.PayloadCase.SCENARIO_ADDED;
     }
 }

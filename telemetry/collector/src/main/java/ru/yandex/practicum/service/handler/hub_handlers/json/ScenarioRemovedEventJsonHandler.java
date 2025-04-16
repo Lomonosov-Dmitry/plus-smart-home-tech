@@ -1,4 +1,4 @@
-package ru.yandex.practicum.service.handler.hub_handlers;
+package ru.yandex.practicum.service.handler.hub_handlers.json;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
@@ -8,8 +8,8 @@ import ru.yandex.practicum.model.hub_events.ScenarioRemovedEvent;
 import ru.yandex.practicum.service.KafkaEventProducer;
 
 @Component
-public class ScenarioRemovedEventHandler extends BaseHubEventHandler<ScenarioRemovedEventAvro> implements HubEventHandler {
-    public ScenarioRemovedEventHandler(KafkaEventProducer producer) {
+public class ScenarioRemovedEventJsonHandler extends BaseHubEventJsonHandler<ScenarioRemovedEventAvro> implements HubEventJsonHandler {
+    public ScenarioRemovedEventJsonHandler(KafkaEventProducer producer) {
         super(producer);
     }
 

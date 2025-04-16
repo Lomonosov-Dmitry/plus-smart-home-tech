@@ -1,9 +1,9 @@
-package ru.yandex.practicum.service.handler.sensor_handlers;
+package ru.yandex.practicum.service.handler.sensor_handlers.json;
 
 import ru.yandex.practicum.model.sensor_events.SensorEvent;
 import ru.yandex.practicum.model.sensor_events.SensorEventType;
 
-public interface SensorEventHandler {
+public interface SensorEventJsonHandler {
     SensorEventType getMessageType();
 
     void handle(SensorEvent event);

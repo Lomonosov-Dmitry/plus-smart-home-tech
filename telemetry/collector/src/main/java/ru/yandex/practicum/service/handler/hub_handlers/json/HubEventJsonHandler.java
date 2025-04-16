@@ -1,9 +1,9 @@
-package ru.yandex.practicum.service.handler.hub_handlers;
+package ru.yandex.practicum.service.handler.hub_handlers.json;
 
 import ru.yandex.practicum.model.hub_events.HubEvent;
 import ru.yandex.practicum.model.hub_events.HubEventType;
 
-public interface HubEventHandler {
+public interface HubEventJsonHandler {
     HubEventType getMessageType();
 
     void handle(HubEvent event);

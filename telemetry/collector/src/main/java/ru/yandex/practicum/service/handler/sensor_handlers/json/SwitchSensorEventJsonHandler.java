@@ -1,4 +1,4 @@
-package ru.yandex.practicum.service.handler.sensor_handlers;
+package ru.yandex.practicum.service.handler.sensor_handlers.json;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
@@ -8,8 +8,8 @@ import ru.yandex.practicum.model.sensor_events.SwitchSensorEvent;
 import ru.yandex.practicum.service.KafkaEventProducer;
 
 @Component
-public class SwitchSensorEventHandler extends BaseSensorEventHandler<SwitchSensorAvro> implements SensorEventHandler {
-    public SwitchSensorEventHandler(KafkaEventProducer producer) {
+public class SwitchSensorEventJsonHandler extends BaseSensorEventJsonHandler<SwitchSensorAvro> implements SensorEventJsonHandler {
+    public SwitchSensorEventJsonHandler(KafkaEventProducer producer) {
         super(producer);
     }
 

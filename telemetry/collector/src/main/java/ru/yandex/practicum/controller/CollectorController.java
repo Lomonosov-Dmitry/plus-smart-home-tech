@@ -10,8 +10,8 @@ import ru.yandex.practicum.model.hub_events.HubEvent;
 import ru.yandex.practicum.model.hub_events.HubEventType;
 import ru.yandex.practicum.model.sensor_events.SensorEvent;
 import ru.yandex.practicum.model.sensor_events.SensorEventType;
-import ru.yandex.practicum.service.handler.hub_handlers.HubEventHandler;
-import ru.yandex.practicum.service.handler.sensor_handlers.SensorEventHandler;
+import ru.yandex.practicum.service.handler.hub_handlers.json.HubEventJsonHandler;
+import ru.yandex.practicum.service.handler.sensor_handlers.json.SensorEventJsonHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -23,14 +23,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/events")
 public class CollectorController {
-    private final Map<SensorEventType, SensorEventHandler> sensorEventHandlers;
-    private final Map<HubEventType, HubEventHandler> hubEventHandlers;
+    private final Map<SensorEventType, SensorEventJsonHandler> sensorEventHandlers;
+    private final Map<HubEventType, HubEventJsonHandler> hubEventHandlers;
 
-    public CollectorController(List<SensorEventHandler> sensorEventHandlers, List<HubEventHandler> hubEventHandlers) {
-        this.sensorEventHandlers = sensorEventHandlers.stream()
-                .collect(Collectors.toMap(SensorEventHandler::getMessageType, Function.identity()));
-        this.hubEventHandlers = hubEventHandlers.stream()
-                .collect(Collectors.toMap(HubEventHandler::getMessageType, Function.identity()));
+    public CollectorController(List<SensorEventJsonHandler> sensorEventJsonHandlers, List<HubEventJsonHandler> hubEventJsonHandlers) {
+        this.sensorEventHandlers = sensorEventJsonHandlers.stream()
+                .collect(Collectors.toMap(SensorEventJsonHandler::getMessageType, Function.identity()));
+        this.hubEventHandlers = hubEventJsonHandlers.stream()
+                .collect(Collectors.toMap(HubEventJsonHandler::getMessageType, Function.identity()));
     }
 
    @PostMapping("/sensors")

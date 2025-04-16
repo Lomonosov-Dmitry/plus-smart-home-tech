@@ -1,28 +1,31 @@
-package ru.yandex.practicum.service.handler.hub_handlers;
+package ru.yandex.practicum.service.handler.hub_handlers.proto;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.avro.specific.SpecificRecordBase;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.model.EventType;
-import ru.yandex.practicum.model.hub_events.HubEvent;
 import ru.yandex.practicum.service.KafkaEventProducer;
 
+import java.time.Instant;
+
+
 @RequiredArgsConstructor
-public abstract class BaseHubEventHandler <T extends SpecificRecordBase> implements HubEventHandler {
+public abstract class BaseHubEventProtoHandler<T extends SpecificRecordBase> implements HubEventProtoHandler {
     protected final KafkaEventProducer producer;
 
-    protected abstract T mapToAvro(HubEvent event);
+    protected abstract T mapToAvro(HubEventProto event);
 
     @Override
-    public void handle(HubEvent event) {
-        if (!event.getType().equals(getMessageType())) {
+    public void handle(HubEventProto event) {
+        if (!event.getPayloadCase().equals(getMessageType())) {
             throw new IllegalArgumentException("Неизвестный тип сообщения");
         }
         T payload = mapToAvro(event);
 
         HubEventAvro hubEventAvro = HubEventAvro.newBuilder()
                 .setHubId(event.getHubId())
-                .setTimestamp(event.getTimestamp())
+                .setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getSeconds(), event.getTimestamp().getNanos()))
                 .setPayload(payload)
                 .build();
 
