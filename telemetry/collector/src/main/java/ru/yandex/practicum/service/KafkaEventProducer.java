@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.model.EventType;
 
 import java.util.Properties;
 
+@Slf4j
 @Component
 public class KafkaEventProducer {
     Properties config = new Properties();
