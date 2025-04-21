@@ -22,12 +22,16 @@ public class ScenarioAddedEventProtoHandler extends BaseHubEventProtoHandler<Sce
         ScenarioAddedEventProto proto = event.getScenarioAdded();
         List<ScenarioConditionAvro> conditions = new ArrayList<>();
         for (ScenarioConditionProto condition : proto.getConditionList()) {
-            conditions.add(ScenarioConditionAvro.newBuilder()
-                    .setOperation(ConditionOperationAvro.valueOf(condition.getOperation().toString()))
-                    .setSensorId(condition.getSensorId())
-                    .setType(ConditionTypeAvro.valueOf(condition.getType().toString()))
-                    .setValue(condition.getValueCase())
-                    .build());
+            ScenarioConditionAvro.Builder builder = ScenarioConditionAvro.newBuilder();
+            ScenarioConditionProto.ValueCase valueCase = condition.getValueCase();
+            switch (valueCase) {
+                case INT_VALUE ->  builder.setValue(condition.getIntValue());
+                case BOOL_VALUE -> builder.setValue(condition.getBoolValue());
+            }
+            builder.setOperation(ConditionOperationAvro.valueOf(condition.getOperation().toString()));
+            builder.setSensorId(condition.getSensorId());
+            builder.setType(ConditionTypeAvro.valueOf(condition.getType().toString()));
+            conditions.add(builder.build());
         }
         List<DeviceActionAvro> actions = new ArrayList<>();
         for (DeviceActionProto action : proto.getActionList()) {

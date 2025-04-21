@@ -72,8 +72,10 @@ public class AggregationStarter {
             events.add(record.value());
         }
         for (SensorEventAvro event : events) {
+            log.info("Пришло событие датчика {} на хабе {}", event.getId(), event.getHubId());
             Optional<SensorsSnapshotAvro> snapshotAvro = updateState(event);
             if (snapshotAvro.isPresent()) {
+                log.info("Пишем в очередь новый снапшот для хаба {}", snapshotAvro.get().getHubId());
                 String topic = "telemetry.snapshots.v1";
                 ProducerRecord<Void, SensorsSnapshotAvro> record = new ProducerRecord<>(topic, (SensorsSnapshotAvro) snapshotAvro.get());
                 try {
@@ -95,6 +97,7 @@ public class AggregationStarter {
                 snapshot = oldState;
         }
         if (snapshot == null) {
+            log.info("Создаем новый снапшот для хаба {}", event.getHubId());
             snapshot = SensorsSnapshotAvro.newBuilder()
                     .setHubId(event.getHubId())
                     .setTimestamp(event.getTimestamp())
@@ -110,13 +113,16 @@ public class AggregationStarter {
                         .setTimestamp(event.getTimestamp())
                         .setData(event.getPayload())
                         .build());
+                log.info("Заменяем состояние датчика {} у хаба {}", event.getId(), event.getHubId());
             } else {
                 state.put(event.getId(), SensorStateAvro.newBuilder()
                         .setTimestamp(event.getTimestamp())
                         .setData(event.getPayload())
                         .build());
+                log.info("Добавляем новый датчик {} у хаба {}", event.getId(), event.getHubId());
             }
         }
+        log.info("Заменяем снапшот для хаба {}", event.getHubId());
         snapshots.replace(event.getHubId(), snapshot);
         return Optional.of(snapshot);
     }
