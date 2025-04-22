@@ -80,7 +80,6 @@ public class AggregationStarter {
                 ProducerRecord<Void, SensorsSnapshotAvro> record = new ProducerRecord<>(topic, (SensorsSnapshotAvro) snapshotAvro.get());
                 try {
                     producer.send(record);
-                    producer.flush();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -99,21 +98,29 @@ public class AggregationStarter {
                     log.info("Хранящийся тайстамп для датчика {} новее пришедшего", event.getId());
                     return Optional.empty();
                 } else {
-                    Map<String, SensorStateAvro> states = new HashMap<>(snapshot.getSensorsState());
-                    SensorStateAvro newState = SensorStateAvro.newBuilder()
-                            .setTimestamp(event.getTimestamp())
-                            .setData(event.getPayload())
-                            .build();
-                    states.replace(event.getId(), newState);
-                    snapshot.setSensorsState(states);
-                    log.info("Заменили состояние датчика {} в хабе {}", event.getId(), event.getHubId());
-                    log.info("Было {}", event.getPayload().toString());
-                    log.info("Стало {}", snapshot.getSensorsState().get(event.getId()).getData().toString());
-                    snapshots.replace(event.getHubId(), snapshot);
-                    log.info("Заменили таймстамп для хаба {}", event.getHubId());
-                    return Optional.of(snapshot);
+                    if (oldState.getData().equals(event.getPayload()))
+                    {
+                        log.info("Состояние датчика {} не изменилось, ничего не пишем", event.getId());
+                        return Optional.empty();
+                    } else {
+                        Map<String, SensorStateAvro> states = new HashMap<>(snapshot.getSensorsState());
+                        log.info("Было {}", snapshot.getSensorsState().get(event.getId()).getData().toString());
+                        SensorStateAvro newState = SensorStateAvro.newBuilder()
+                                .setTimestamp(event.getTimestamp())
+                                .setData(event.getPayload())
+                                .build();
+                        states.replace(event.getId(), newState);
+                        snapshot.setSensorsState(states);
+                        log.info("Заменили состояние датчика {} в хабе {}", event.getId(), event.getHubId());
+                        log.info("Пришло {}", event.getPayload().toString());
+                        log.info("Стало {}", snapshot.getSensorsState().get(event.getId()).getData().toString());
+                        snapshots.replace(event.getHubId(), snapshot);
+                        log.info("Заменили таймстамп для хаба {}", event.getHubId());
+                        return Optional.of(snapshot);
+                    }
                 }
             } else {
+                log.info("Пришел новый датчик {} для хаба {}", event.getId(), event.getHubId());
                 Map<String, SensorStateAvro> states = new HashMap<>(snapshot.getSensorsState());
                 SensorStateAvro newState = SensorStateAvro.newBuilder()
                         .setTimestamp(event.getTimestamp())
@@ -122,7 +129,7 @@ public class AggregationStarter {
                 states.put(event.getId(), newState);
                 snapshot.setSensorsState(states);
                 log.info("Записали состояние датчика {} в хабе {}", event.getId(), event.getHubId());
-                log.info("Было {}", event.getPayload().toString());
+                log.info("Пришло {}", event.getPayload().toString());
                 log.info("Стало {}", snapshot.getSensorsState().get(event.getId()).getData().toString());
                 snapshots.replace(event.getHubId(), snapshot);
                 log.info("Заменили таймстамп для хаба {}", event.getHubId());
