@@ -1,6 +1,7 @@
 package ru.yandex.practicum.services;
 
 import com.google.protobuf.Timestamp;
+import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class SnapshotService {
         this.sensorTypes = sensorTypeHandlers.stream()
                 .collect(Collectors.toMap(SensorTypeHandler::getType, Function.identity()));
         this.hubService = hubService;
-        this.hubRouterClient = hubRouterClient;
+        this.hubRouterClient = HubRouterControllerGrpc.newBlockingStub(ManagedChannelBuilder.forAddress("localhost", 59090).usePlaintext().keepAliveWithoutCalls(true).build());
     }
 
     public void handleSnapshot(SensorsSnapshotAvro snapshot) {
