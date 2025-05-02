@@ -113,7 +113,7 @@ public class AggregationStarter {
                 states.put(event.getId(), newState);
                 snapshot.setSensorsState(states);
                 log.info("Записали состояние датчика {} в хабе {}", event.getId(), event.getHubId());
-                log.info("Пришло {}", event.getPayload().toString());
+                log.info("Пришло. {}", event.getPayload().toString());
                 log.info("Стало {}", snapshot.getSensorsState().get(event.getId()).getData().toString());
                 snapshots.replace(event.getHubId(), snapshot);
                 log.info("Заменили таймстамп для хаба {}", event.getHubId());
