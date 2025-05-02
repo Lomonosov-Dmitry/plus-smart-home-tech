@@ -67,7 +67,6 @@ public class SnapshotService {
                     Condition condition = scenario.getConditions().get(sensorName);
                     SensorStateAvro sensorState = snapshot.getSensorsState().get(sensorName);
                     int sensorValue = sensorTypes.get(condition.getType()).getValue(sensorState);
-                    log.info("Класс датчика {}", sensorState.getData().getClass().toString());
                     if (!predicates.get(condition.getOperation()).compare(sensorValue, condition.getValue())) {
                         acted = false;
                         break;
