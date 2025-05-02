@@ -1,17 +1,11 @@
 package ru.yandex.practicum;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
-import org.apache.kafka.common.serialization.VoidDeserializer;
-import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer;
-import ru.yandex.practicum.kafka.serializer.GeneralKafkaSerializer;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
@@ -21,26 +15,16 @@ import java.util.*;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class AggregationStarter {
+
     private final KafkaConsumer<Void, SensorEventAvro> consumer;
     private final KafkaProducer<Void, SensorsSnapshotAvro> producer;
     private final Map<String, SensorsSnapshotAvro> snapshots;
 
-    public AggregationStarter() {
+    public AggregationStarter(Properties consumerProperties, Properties producerProperties) {
         this.snapshots = new HashMap<>();
-        Properties consProps = new Properties();
-        consProps.put(ConsumerConfig.CLIENT_ID_CONFIG, "Consumer");
-        consProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group.id");
-        consProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        consProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class.getCanonicalName());
-        consProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class.getCanonicalName());
-        this.consumer = new KafkaConsumer<>(consProps);
-        Properties prodProps = new Properties();
-        prodProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        prodProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
-        prodProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralKafkaSerializer.class);
-        this.producer = new KafkaProducer<>(prodProps);
+        this.consumer = new KafkaConsumer<>(consumerProperties);
+        this.producer = new KafkaProducer<>(producerProperties);
 
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
     }
