@@ -42,7 +42,8 @@ public class SnapshotService {
         this.sensorTypes = sensorTypeHandlers.stream()
                 .collect(Collectors.toMap(SensorTypeHandler::getType, Function.identity()));
         this.hubService = hubService;
-        this.hubRouterClient = hubRouterClient;
+        this.hubRouterClient = HubRouterControllerGrpc.newBlockingStub(ManagedChannelBuilder.forAddress("static://localhost", 59090)
+                .usePlaintext().keepAliveWithoutCalls(true).build());
     }
 
     public void handleSnapshot(SensorsSnapshotAvro snapshot) {
