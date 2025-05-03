@@ -82,7 +82,7 @@ public class SnapshotService {
                     ActionTypeProto typeProto = mapToProto(scenario.getActions().get(s).getType());
                     DeviceActionProto.Builder actionProto = DeviceActionProto.newBuilder();
                     actionProto.setSensorId(s);
-                    actionProto.setType(typeProto);
+                    actionProto.setType(ActionTypeProto.valueOf(scenario.getActions().get(s).getType().name()));
                     actionProto.setValue(scenario.getActions().get(s).getValue());
                     actionProto.build();
 
