@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
 import java.util.*;
@@ -20,6 +21,10 @@ public class AggregationStarter {
     private final KafkaConsumer<Void, SensorEventAvro> consumer;
     private final KafkaProducer<Void, SensorsSnapshotAvro> producer;
     private final Map<String, SensorsSnapshotAvro> snapshots;
+    @Value("${kafka.sensor_topic}")
+    private String sensorTopic;
+    @Value("${kafka.snapshot_topic}")
+    private String snapshotTopic;
 
     public AggregationStarter(Properties consumerProperties, Properties producerProperties) {
         this.snapshots = new HashMap<>();
@@ -31,7 +36,7 @@ public class AggregationStarter {
 
     public void start() {
         try {
-            consumer.subscribe(List.of("telemetry.sensors.v1"));
+            consumer.subscribe(List.of(sensorTopic));
             while (true) {
 
                 handleRecords(consumer.poll(Duration.ofMillis(1000)));
@@ -60,7 +65,7 @@ public class AggregationStarter {
             Optional<SensorsSnapshotAvro> snapshotAvro = updateState(event);
             if (snapshotAvro.isPresent()) {
                 log.info("Пишем в очередь новый снапшот для хаба {}", snapshotAvro.get().getHubId());
-                String topic = "telemetry.snapshots.v1";
+                String topic = snapshotTopic;
                 ProducerRecord<Void, SensorsSnapshotAvro> record = new ProducerRecord<>(topic, (SensorsSnapshotAvro) snapshotAvro.get());
                 try {
                     producer.send(record);

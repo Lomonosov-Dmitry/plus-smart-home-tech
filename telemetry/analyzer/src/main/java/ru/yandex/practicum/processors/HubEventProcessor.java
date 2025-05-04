@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.services.HubService;
@@ -19,16 +20,20 @@ import java.util.Properties;
 public class HubEventProcessor implements Runnable {
     private final KafkaConsumer<Void, HubEventAvro> consumer;
     private final HubService hubService;
+    @Value("${kafka.hub_topic}")
+    private String hubTopic;
 
     public HubEventProcessor(Properties consumerHubProperties, HubService hubService) {
         this.consumer = new KafkaConsumer<>(consumerHubProperties);
         this.hubService = hubService;
+        Thread release = new Thread(consumer::wakeup);
+        Runtime.getRuntime().addShutdownHook(release);
     }
 
     @Override
     public void run() {
         try {
-            consumer.subscribe(List.of("telemetry.hubs.v1"));
+            consumer.subscribe(List.of(hubTopic));
             while (true) {
 
                 handleRecords(consumer.poll(Duration.ofMillis(1000)));
@@ -79,3 +84,5 @@ public class HubEventProcessor implements Runnable {
         }
     }
 }
+
+

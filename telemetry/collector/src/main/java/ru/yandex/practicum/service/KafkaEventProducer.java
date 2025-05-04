@@ -7,6 +7,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.VoidSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.serializer.GeneralKafkaSerializer;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
@@ -18,18 +19,21 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class KafkaEventProducer {
-    Properties config = new Properties();
+    @Value("${kafka.hub_topic}")
+    private String hubTopic;
+    @Value("${kafka.sensor_topic}")
+    private String sensorTopic;
+    Properties config;
 
-    public KafkaEventProducer() {
-        this.config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        this.config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
-        this.config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralKafkaSerializer.class);
+    public KafkaEventProducer(Properties producerProperties) {
+        this.config = producerProperties;
     }
 
     public <T extends SpecificRecordBase> void send(T event, EventType type) {
         switch (type) {
             case HUB_EVENT -> {
-                String topic = "telemetry.hubs.v1";
+                log.info("Пишем событие в очередь хабов");
+                String topic = hubTopic;
                 ProducerRecord<String, HubEventAvro> record = new ProducerRecord<>(topic, (HubEventAvro) event);
                 try(Producer<String, HubEventAvro> producer = new KafkaProducer<>(config)) {
                     producer.send(record);
@@ -40,7 +44,8 @@ public class KafkaEventProducer {
                 }
             }
             case SENSOR_EVENT -> {
-                String topic = "telemetry.sensors.v1";
+                log.info("Пишем событие в очередь сенсоров");
+                String topic = sensorTopic;
                 ProducerRecord<String, SensorEventAvro> record = new ProducerRecord<>(topic, (SensorEventAvro) event);
                 try (Producer<String, SensorEventAvro> producer = new KafkaProducer<>(config)) {
                     producer.send(record);

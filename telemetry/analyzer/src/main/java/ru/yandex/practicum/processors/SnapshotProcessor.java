@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.services.SnapshotService;
@@ -19,15 +20,19 @@ import java.util.Properties;
 public class SnapshotProcessor {
     private final KafkaConsumer<Void, SensorsSnapshotAvro> consumer;
     private final SnapshotService snapshotService;
+    @Value("${kafka.snapshot_topic}")
+    private String snapshotTopic;
 
     public SnapshotProcessor(Properties consumerSnapshotProperties, SnapshotService snapshotService) {
         this.consumer = new KafkaConsumer<>(consumerSnapshotProperties);
         this.snapshotService = snapshotService;
+        Thread release = new Thread(consumer::wakeup);
+        Runtime.getRuntime().addShutdownHook(release);
     }
 
     public void start() {
         try {
-            consumer.subscribe(List.of("telemetry.snapshots.v1"));
+            consumer.subscribe(List.of(snapshotTopic));
             while (true) {
 
                 handleRecords(consumer.poll(Duration.ofMillis(1000)));

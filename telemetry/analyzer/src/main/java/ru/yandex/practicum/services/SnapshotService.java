@@ -79,7 +79,6 @@ public class SnapshotService {
                 log.info("Работаем по сценарию {}", scenario.getName());
                 for (String s : scenario.getActions().keySet()) {
                     log.info("Выполняем действие по {}", s);
-                    ActionTypeProto typeProto = mapToProto(scenario.getActions().get(s).getType());
                     DeviceActionProto.Builder actionProto = DeviceActionProto.newBuilder();
                     actionProto.setSensorId(s);
                     actionProto.setType(ActionTypeProto.valueOf(scenario.getActions().get(s).getType().name()));
@@ -98,26 +97,6 @@ public class SnapshotService {
                     log.info("Создали запрос, отправляем");
                     hubRouterClient.handleDeviceAction(request);
                 }
-            }
-        }
-    }
-
-    private ActionTypeProto mapToProto(ActionTypeAvro type) {
-        switch (type) {
-            case INVERSE -> {
-                return ActionTypeProto.INVERSE;
-            }
-            case ACTIVATE -> {
-                return ActionTypeProto.ACTIVATE;
-            }
-            case SET_VALUE -> {
-                return ActionTypeProto.SET_VALUE;
-            }
-            case DEACTIVATE -> {
-                return ActionTypeProto.DEACTIVATE;
-            }
-            default -> {
-                return ActionTypeProto.UNRECOGNIZED;
             }
         }
     }
