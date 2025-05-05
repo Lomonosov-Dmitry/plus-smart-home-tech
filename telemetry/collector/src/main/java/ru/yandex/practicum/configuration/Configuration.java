@@ -3,12 +3,14 @@ package ru.yandex.practicum.configuration;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import ru.yandex.practicum.kafka.serializer.GeneralKafkaSerializer;
 
 import java.util.Properties;
 
 @org.springframework.context.annotation.Configuration
+@ConfigurationProperties("collector.kafka")
 public class Configuration {
     @Value("${kafka.bootstrap_server}")
     private String bootstrapSever;
