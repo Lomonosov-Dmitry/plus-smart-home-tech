@@ -9,6 +9,8 @@ import ru.yandex.practicum.enums.ProductCategory;
 import ru.yandex.practicum.enums.ProductState;
 import ru.yandex.practicum.enums.QuantityState;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -16,9 +18,9 @@ import ru.yandex.practicum.enums.QuantityState;
 @Table(name = "products")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_id")
-    Long productId;
+    UUID productId;
 
     @Column(name = "product_name")
     String productName;

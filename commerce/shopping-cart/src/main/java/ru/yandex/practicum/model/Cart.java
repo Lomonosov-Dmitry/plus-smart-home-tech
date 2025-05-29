@@ -6,23 +6,29 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "cart")
+@Table(name = "carts")
 public class Cart {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "cart_id")
-    Long cartId;
+    UUID cartId;
 
     @Column(name = "active")
     Boolean status;
 
-    @OneToMany
-    @JoinColumn(name = "cart_id")
-    List<ProdsInCart> products;
+    @Column(name = "username")
+    String username;
+
+    @ElementCollection
+    @CollectionTable(name = "product_cart", joinColumns = @JoinColumn(name = "cart_id"))
+    @MapKeyColumn(name = "product_id")
+    @Column(name = "quantity")
+    Map<UUID, Integer> products;
 }

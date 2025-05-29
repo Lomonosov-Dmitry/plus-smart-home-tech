@@ -6,20 +6,26 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "product_cart")
-public class ProdsInCart {
-
+@Table(name = "warehouse_products")
+public class WarehouseProduct {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    Long productId;
+    UUID productId;
 
-    @Column(name = "product_name")
-    String prodName;
+    @Column(name = "fragile")
+    Boolean fragile;
+
+    @Embedded
+    Dimention dimention;
+
+    @Column(name = "weight")
+    Double weight;
 
     @Column(name = "quantity")
     Integer quantity;

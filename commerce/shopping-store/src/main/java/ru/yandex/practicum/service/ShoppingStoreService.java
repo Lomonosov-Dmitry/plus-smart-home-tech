@@ -2,10 +2,7 @@ package ru.yandex.practicum.service;
 
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import ru.yandex.practicum.enums.ProductCategory;
 import ru.yandex.practicum.enums.ProductState;
 import ru.yandex.practicum.dto.ProductDto;
@@ -18,10 +15,11 @@ import ru.yandex.practicum.repository.ProductsRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
-public class Service {
+public class ShoppingStoreService {
 
     private final ProductsRepository productsRepository;
 
@@ -37,7 +35,7 @@ public class Service {
         return ProductMapper.INSTANCE.toDto(productsRepository.save(ProductMapper.INSTANCE.toProduct(dto)));
     }
 
-    public Boolean removeProduct(Long id) {
+    public Boolean removeProduct(UUID id) {
         if (!productsRepository.existsById(id))
             throw new ProductNotFoundException("Продукт не найден");
         else {
@@ -48,7 +46,7 @@ public class Service {
         }
     }
 
-    public ProductDto updateProductQuantity(Long productId, String state) {
+    public ProductDto updateProductQuantity(UUID productId, String state) {
         if (!productsRepository.existsById(productId))
             throw new ProductNotFoundException("Продукт не найден");
         else {
@@ -65,7 +63,7 @@ public class Service {
     }
 
 
-    public ProductDto getProductById(Long id) {
+    public ProductDto getProductById(UUID id) {
         Optional<Product> prod = productsRepository.findById(id);
         if (prod.isEmpty())
             throw new ProductNotFoundException("Продукт не найден");
@@ -73,26 +71,22 @@ public class Service {
             return ProductMapper.INSTANCE.toDto(prod.get());
     }
 
-    public Page<ProductDto> getAllProducts(String prodCategory, int page, int size, String sort) {
+    public List<ProductDto> getAllProducts(String prodCategory, int page, int size, List<String> sort) {
         ProductCategory category = Arrays.stream(ProductCategory.values())
                 .filter(prodCat -> prodCat.name().equalsIgnoreCase(prodCategory))
                 .findFirst()
                 .orElse(null);
         if (category == null)
             throw new NotFoundException("Категория товара " + prodCategory + " не найдена");
-
-        List<ProductDto> products = null;
+        Pageable pageable = null;
         if (sort != null)
-            products = productsRepository.findAll(Sort.by(sort)).stream()
-                    .filter(product -> product.getProductCategory().equals(category))
-                    .map(ProductMapper.INSTANCE::toDto)
-                    .toList();
+            pageable = PageRequest.of(page, size, Sort.by(Sort.DEFAULT_DIRECTION, String.join(",", sort)));
         else
-            products = productsRepository.findAll().stream()
-                    .filter(product -> product.getProductCategory().equals(category))
-                    .map(ProductMapper.INSTANCE::toDto)
-                    .toList();
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC));
+        List<Product> products = productsRepository.findAllByProductCategory(ProductCategory.valueOf(prodCategory), pageable);
 
-        return new PageImpl<>(products, (PageRequest.of(page, size)), products.size());
+        return products.stream()
+                .map(ProductMapper.INSTANCE::toDto)
+                .toList();
     }
 }

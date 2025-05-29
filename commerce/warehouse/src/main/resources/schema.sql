@@ -1,11 +1,10 @@
-CREATE TABLE IF NOT EXISTS products (
-    product_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    product_name VARCHAR,
-    description VARCHAR,
-    image_src VARCHAR,
-    quantity_state VARCHAR,
-    product_state VARCHAR,
-    product_category VARCHAR,
-    price DECIMAL
+CREATE TABLE IF NOT EXISTS warehouse_products (
+    product_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    fragile BOOLEAN,
+    width DECIMAL,
+    height DECIMAL,
+    depth DECIMAL,
+    weight DECIMAL,
+    quantity INT
 );
 
