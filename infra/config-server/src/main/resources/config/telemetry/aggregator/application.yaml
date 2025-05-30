@@ -1,0 +1,4 @@
+kafka:
+  bootstrap_server: localhost:9092
+  sensor_topic: telemetry.sensors.v1
+  snapshot_topic: telemetry.snapshots.v1
