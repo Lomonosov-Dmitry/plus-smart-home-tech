@@ -1,7 +1,6 @@
 package ru.yandex.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.ProductDto;
 import ru.yandex.practicum.service.ShoppingStoreService;
@@ -40,7 +39,7 @@ public class Controller {
     public List<ProductDto> getAllProducts(@RequestParam String category,
                                            @RequestParam(defaultValue = "0", required = false) Integer page,
                                            @RequestParam(defaultValue = "10", required = false) Integer size,
-                                           @RequestParam(required = false) List<String> sort) {
+                                           @RequestParam(required = false, defaultValue = "") List<String> sort) {
         return service.getAllProducts(category, page, size, sort);
     }
 

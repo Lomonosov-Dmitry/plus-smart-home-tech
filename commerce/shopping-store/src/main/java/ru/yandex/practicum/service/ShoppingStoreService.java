@@ -79,10 +79,10 @@ public class ShoppingStoreService {
         if (category == null)
             throw new NotFoundException("Категория товара " + prodCategory + " не найдена");
         Pageable pageable = null;
-        if (sort != null)
+        if (!sort.isEmpty())
             pageable = PageRequest.of(page, size, Sort.by(Sort.DEFAULT_DIRECTION, String.join(",", sort)));
         else
-            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC));
+            pageable = PageRequest.of(page, size);
         List<Product> products = productsRepository.findAllByProductCategory(ProductCategory.valueOf(prodCategory), pageable);
 
         return products.stream()

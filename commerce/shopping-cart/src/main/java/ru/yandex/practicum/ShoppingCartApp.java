@@ -9,7 +9,7 @@ import ru.yandex.practicum.feign.WarehouseClient;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-@EnableFeignClients
+@EnableFeignClients(clients = {WarehouseClient.class})
 @EnableDiscoveryClient
 public class ShoppingCartApp {
     public static void main(String[] args) {
