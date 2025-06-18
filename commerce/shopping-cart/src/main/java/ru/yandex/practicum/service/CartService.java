@@ -4,14 +4,13 @@ import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.dto.ChangeProductQuantityRequest;
+import ru.yandex.practicum.requests.ChangeProductQuantityRequest;
 import ru.yandex.practicum.dto.ShoppingCartDto;
 import ru.yandex.practicum.feign.WarehouseClient;
 import ru.yandex.practicum.mappers.CartMapper;
 import ru.yandex.practicum.model.Cart;
 import ru.yandex.practicum.repository.CartRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

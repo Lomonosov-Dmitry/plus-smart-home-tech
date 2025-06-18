@@ -5,7 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.*;
+import ru.yandex.practicum.requests.AddProductToWarehouseRequest;
+import ru.yandex.practicum.requests.AssemblyProductsForOrderRequest;
+import ru.yandex.practicum.requests.NewProductInWarehouseRequest;
+import ru.yandex.practicum.requests.ShippedToDeliveryRequest;
 import ru.yandex.practicum.service.WarehouseService;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/warehouse")
@@ -34,5 +41,22 @@ public class Controller {
     @GetMapping("/address")
     public AddressDto getAddress() {
         return service.getAddress();
+    }
+
+    @PostMapping("/assembly")
+    public BookedProductsDto assemblyProductForOrderFromShoppingCart(@RequestBody AssemblyProductsForOrderRequest request) {
+        return service.assembly(request);
+    }
+
+    @PostMapping("/shipped")
+    @ResponseStatus(HttpStatus.OK)
+    public void setShipped(@RequestBody ShippedToDeliveryRequest request) {
+        service.setShipped(request);
+    }
+
+    @PostMapping("/return")
+    @ResponseStatus(HttpStatus.OK)
+    public void returnProducts(@RequestBody Map<UUID, Integer> products) {
+        service.returnProducts(products);
     }
 }

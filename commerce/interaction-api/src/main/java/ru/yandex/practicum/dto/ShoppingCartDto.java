@@ -17,4 +17,11 @@ public class ShoppingCartDto {
     UUID cartId;
 
     Map<UUID, Integer> products;
+
+    public static ShoppingCartDto of(UUID cartId, Map<UUID, Integer> products) {
+        ShoppingCartDto cart = new ShoppingCartDto();
+        cart.cartId = cartId;
+        cart.products = products;
+        return cart;
+    }
 }

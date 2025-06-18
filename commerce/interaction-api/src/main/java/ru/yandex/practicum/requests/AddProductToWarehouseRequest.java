@@ -1,4 +1,4 @@
-package ru.yandex.practicum.dto;
+package ru.yandex.practicum.requests;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -11,15 +11,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NewProductInWarehouseRequest {
+public class AddProductToWarehouseRequest {
     @NotNull
     UUID productId;
 
-    Boolean fragile;
-
     @NotNull
-    DimentionDto dimension;
-
-    @NotNull
-    Double weight;
+    Integer quantity;
 }

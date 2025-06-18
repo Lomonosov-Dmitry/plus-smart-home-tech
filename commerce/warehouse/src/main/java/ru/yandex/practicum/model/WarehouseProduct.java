@@ -29,4 +29,8 @@ public class WarehouseProduct {
 
     @Column(name = "quantity")
     Integer quantity;
+
+    public Double getVolume() {
+        return dimention.getWidth() * dimention.getHeight() * dimention.getDepth();
+    }
 }
