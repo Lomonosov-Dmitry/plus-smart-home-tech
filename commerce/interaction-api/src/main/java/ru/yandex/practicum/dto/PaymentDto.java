@@ -1,6 +1,5 @@
 package ru.yandex.practicum.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,10 +10,12 @@ import java.util.UUID;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AddProductToWarehouseRequest {
-    @NotNull
-    UUID productId;
+public class PaymentDto {
+    UUID paymentId;
 
-    @NotNull
-    Integer quantity;
+    Double totalPayment;
+
+    Double deliveryTotal;
+
+    Double feeTotal;
 }

@@ -1,20 +1,26 @@
-package ru.yandex.practicum.dto;
+package ru.yandex.practicum.requests;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import ru.yandex.practicum.dto.DimentionDto;
 
 import java.util.UUID;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChangeProductQuantityRequest {
+public class NewProductInWarehouseRequest {
     @NotNull
     UUID productId;
 
+    Boolean fragile;
+
     @NotNull
-    Integer newQuantity;
+    DimentionDto dimension;
+
+    @NotNull
+    Double weight;
 }

@@ -1,13 +1,11 @@
 package ru.yandex.practicum.mappers;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
-import ru.yandex.practicum.dto.NewProductInWarehouseRequest;
+import ru.yandex.practicum.requests.NewProductInWarehouseRequest;
 import ru.yandex.practicum.model.Dimention;
 import ru.yandex.practicum.model.WarehouseProduct;
 
-@Mapper//(componentModel = "spring")
+@Mapper
 public abstract class WarehouseProductMapper {
 
     public static WarehouseProduct toWarehouseProduct(NewProductInWarehouseRequest request) {
@@ -22,8 +20,4 @@ public abstract class WarehouseProductMapper {
         product.setWeight(request.getWeight());
         return product;
     }
-
-    /*WarehouseProductMapper INSTATCE = Mappers.getMapper(WarehouseProductMapper.class);
-
-    WarehouseProduct toWarehouseProduct(NewProductInWarehouseRequest request);*/
 }

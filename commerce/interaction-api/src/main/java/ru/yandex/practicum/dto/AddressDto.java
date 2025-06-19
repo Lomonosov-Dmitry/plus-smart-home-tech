@@ -18,4 +18,10 @@ public class AddressDto {
     String house;
 
     String flat;
+
+    public Boolean contains(String s) {
+        return this.country.contains(s) ||
+                this.city.contains(s) ||
+                this.street.contains(s);
+    }
 }
